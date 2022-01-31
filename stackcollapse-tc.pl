@@ -56,6 +56,7 @@ use Getopt::Long;
 my $include_tname = 0;		# include thread names in stacks
 my $include_tid = 0;		# include thread IDs in stacks
 my $shorten_pkgs = 0;		# shorten package names
+my $only_runnable = 1;		# include only runnable threads
 my $with_pattern = "";		# optional line to look in threaddumps
 my $help = 0;
 
@@ -63,12 +64,13 @@ sub usage {
 	die <<USAGE_END;
 USAGE: $0 [options] infile > outfile\n
 	--include-tname
-	--no-include-tname # include/omit thread names in stacks (default: omit)
+	--no-include-tname       # include/omit thread names in stacks (default: omit)
 	--include-tid
-	--no-include-tid   # include/omit thread IDs in stacks (default: omit)
+	--no-include-tid         # include/omit thread IDs in stacks (default: omit)
 	--shorten-pkgs
-	--no-shorten-pkgs  # (don't) shorten package names (default: don't shorten)
-	--with jetbrains  # include only stacktraces which contain 'jetbrains' word in package/function name (not thread name!)
+	--no-shorten-pkgs        # (don't) shorten package names (default: don't shorten)
+	--no-runnable-only       # include not only runnable threads (default: only runnable)
+	--with jetbrains         # include only stacktraces which contain 'jetbrains' word in package/function name (not thread name!)
 
 	eg,
 	$0 --no-include-tname stacks.txt > collapsed.txt
@@ -79,12 +81,13 @@ GetOptions(
 	'include-tname!'  => \$include_tname,
 	'include-tid!'    => \$include_tid,
 	'shorten-pkgs!'   => \$shorten_pkgs,
+	'runnable-only!'  => \$only_runnable,
 	'with:s'   		  => \$with_pattern,
 	'help'            => \$help,
 ) or usage();
 $help && usage();
 
-
+# print "$only_runnable\n";
 
 # internals
 my %collapsed;
@@ -115,7 +118,7 @@ foreach (<>) {
 		goto clear if !$has_match;
 
 		# only include RUNNABLE states
-		goto clear if $state ne "RUNNABLE";
+		goto clear if $state ne "RUNNABLE" && $only_runnable eq 1;
 
 		# save stack
 		if (defined $tname) { unshift @stack, $tname; }
