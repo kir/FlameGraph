@@ -107,8 +107,8 @@ foreach (<>) {
 
 	# Exclude some strings related to TeamCity-generated threaddumps.
 	# Note, this also removes most thread names at all.
-	next if m/(TC:|\d\d:\d\d:\d\d|Request processing time|startup time|JVM parameters|Database type|Memory usage|CPU statistics| = |Last full GC|Dump taken|Current user)/;
-	next if m/(refs\/|Checkout rules|teamcity\/|by "|\+:|Details:)/;
+	next if m/(TC:|\d\d:\d\d:\d\d|Request processing time|startup time|JVM parameters|Database type|Memory usage|Server statistics:|CPU statistics| = |Last full GC|Dump taken|Current user)/;
+	next if m/(refs\/|Checkout rules|Periodic thread dump|teamcity\/|by "|\+:|Details:)/;
 
 	chomp;
 
